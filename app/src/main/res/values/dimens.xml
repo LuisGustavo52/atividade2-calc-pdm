@@ -5,4 +5,5 @@
     <dimen name="button_text_size">48sp</dimen>
     <dimen name="text_view_result_text_size">60sp</dimen>
     <dimen name="text_view_ultima_expressao_text_size">40sp</dimen>
+    <dimen name="button_text_size_reset">40</dimen>
 </resources>
