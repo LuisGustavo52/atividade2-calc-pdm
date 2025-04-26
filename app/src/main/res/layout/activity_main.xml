@@ -262,7 +262,7 @@
     <View
         android:id="@+id/splitLineHorizontalID"
         android:layout_width="0dp"
-        android:layout_height="1dp"
+        android:layout_height="3dp"
         android:layout_marginBottom="@dimen/button_v_margin"
         android:background="@color/gray"
         app:layout_constraintBottom_toTopOf="@+id/buttonDeleteID"
@@ -274,15 +274,15 @@
         android:id="@+id/textViewResultadoID"
         android:layout_width="wrap_content"
         android:layout_height="80dp"
-        android:layout_marginTop="156dp"
+        android:layout_marginBottom="@dimen/button_v_margin"
         android:gravity="center_vertical|right"
         android:text="0"
         android:textAlignment="gravity"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
         android:textSize="@dimen/text_view_result_text_size"
-        android:textColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/splitLineHorizontalID"
         app:layout_constraintEnd_toEndOf="@+id/splitLineHorizontalID"
-        app:layout_constraintTop_toTopOf="parent"
         app:textAllCaps="false" />
 
     <TextView
