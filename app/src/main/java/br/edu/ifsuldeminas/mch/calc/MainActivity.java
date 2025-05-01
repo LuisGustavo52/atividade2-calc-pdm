@@ -39,6 +39,26 @@ public class MainActivity extends AppCompatActivity {
     private Button buttonResetar;
     private StringBuilder expressaoResultado;
 
+    private static boolean flagResultado = false;
+
+    public static boolean isFlagResultado() {
+        return flagResultado;
+    }
+
+    public static void setFlagResultado(boolean flagResultado) {
+        MainActivity.flagResultado = flagResultado;
+    }
+
+    public static Boolean getIsOperatorAllowed() {
+        return isOperatorAllowed;
+    }
+
+    public static void setIsOperatorAllowed(Boolean isOperatorAllowed) {
+        MainActivity.isOperatorAllowed = isOperatorAllowed;
+    }
+
+    private static Boolean isOperatorAllowed = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
         textViewUltimaExpressao = findViewById(R.id.textViewUltimaExpressaoID);
 
         CalcButton calcButtonListener = new CalcButton(textViewResultado, textViewUltimaExpressao, expressaoResultado);
+        CalcOperator calcOperatorListener = new CalcOperator(textViewResultado, textViewUltimaExpressao, expressaoResultado);
 
         buttonZero = findViewById(R.id.buttonZeroID);
         buttonZero.setOnClickListener(calcButtonListener);
@@ -82,22 +103,48 @@ public class MainActivity extends AppCompatActivity {
         buttonNove.setOnClickListener(calcButtonListener);
 
         buttonPorcento = findViewById(R.id.buttonPorcentoID);
-        buttonPorcento.setOnClickListener(calcButtonListener);
+        buttonPorcento.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String expressaoAtual = textViewResultado.getText().toString();
+
+                if(!isOperatorAllowed)
+                    return;
+
+                StringBuilder numero = new StringBuilder();
+                for (int i = expressaoAtual.length() - 1; i >= 0; i--) {
+                    char c = expressaoAtual.charAt(i);
+                    if (Character.isDigit(c) || c == ',' || c == '.') {
+                        numero.append(c);
+                    } else {
+                        break;
+                    }
+                }
+
+                int start = expressaoAtual.length() - numero.length();
+                String novaExpressao = expressaoAtual.substring(0, start) + "(" + numero + "/100)";
+                expressaoResultado.setLength(0);
+                expressaoResultado.append(novaExpressao);
+                textViewResultado.setText(novaExpressao.toString());
+
+                MainActivity.setIsOperatorAllowed(true);
+            }
+        });
 
         buttonSoma = findViewById(R.id.buttonSomaID);
-        buttonSoma.setOnClickListener(calcButtonListener);
+        buttonSoma.setOnClickListener(calcOperatorListener);
 
         buttonSubtracao = findViewById(R.id.buttonSubtracaoID);
-        buttonSubtracao.setOnClickListener(calcButtonListener);
+        buttonSubtracao.setOnClickListener(calcOperatorListener);
 
         buttonDivisao = findViewById(R.id.buttonDivisaoID);
-        buttonDivisao.setOnClickListener(calcButtonListener);
+        buttonDivisao.setOnClickListener(calcOperatorListener);
 
         buttonMultiplicacao = findViewById(R.id.buttonMultiplicacaoID);
-        buttonMultiplicacao.setOnClickListener(calcButtonListener);
+        buttonMultiplicacao.setOnClickListener(calcOperatorListener);
 
         buttonVirgula = findViewById(R.id.buttonVirgulaID);
-        buttonVirgula.setOnClickListener(calcButtonListener);
+        buttonVirgula.setOnClickListener(calcOperatorListener);
 
         buttonIgual = findViewById(R.id.buttonIgualID);
         buttonIgual.setOnClickListener(new View.OnClickListener() {
@@ -108,10 +155,10 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     avaliadorExpressao = new ExpressionBuilder(expressaoCorrigida).build();
                     Double resultado = avaliadorExpressao.calculate();
-                    calcButtonListener.setFlagResultado(true);
+                    setFlagResultado(true);
 
                     textViewUltimaExpressao.setText(expressaoResultado.toString());
-                    textViewResultado.setText(resultado.toString().replace(".",","));
+                    textViewResultado.setText(resultado.toString().replace(".", ","));
                 } catch (Exception e) {
                     Log.d(TAG, e.getMessage());
                 }
@@ -138,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
                 textViewResultado.setText("");
                 expressaoResultado.setLength(0);
                 textViewResultado.setText("0");
+                setFlagResultado(false);
             }
         });
 
@@ -145,10 +193,10 @@ public class MainActivity extends AppCompatActivity {
         buttonApagar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(textViewResultado.getText().length() == 1 || textViewResultado.getText() == null || textViewResultado.getText().toString().equals("0")){
+                if (textViewResultado.getText().length() == 1 || textViewResultado.getText() == null || textViewResultado.getText().toString().equals("0")) {
                     textViewResultado.setText("0");
                     expressaoResultado.setLength(0);
-                }else {
+                } else {
                     String stringApagada = textViewResultado.getText().toString();
                     stringApagada = stringApagada.substring(0, stringApagada.length() - 1).toString();
                     textViewResultado.setText(stringApagada);
@@ -161,9 +209,9 @@ public class MainActivity extends AppCompatActivity {
 
     @NonNull
     private String getStringCorrigida(StringBuilder expressaoResultado) {
-        String expressaoCorrigida = expressaoResultado.toString().replace(",",".");
-        expressaoCorrigida = expressaoCorrigida.replace("÷","/");
-        expressaoCorrigida = expressaoCorrigida.replace("X","*");
+        String expressaoCorrigida = expressaoResultado.toString().replace(",", ".");
+        expressaoCorrigida = expressaoCorrigida.replace("÷", "/");
+        expressaoCorrigida = expressaoCorrigida.replace("X", "*");
         return expressaoCorrigida;
     }
 
